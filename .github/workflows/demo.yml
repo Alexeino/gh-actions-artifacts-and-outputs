@@ -25,6 +25,13 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4 # Using official action provided by Github to upload artifact
+        with:
+          name: dist-files # Identifier to later use these uploaded artifacts in subsequent jobs
+          path: |
+            dist
+            package.json
   deploy:
     needs: build
     runs-on: ubuntu-latest

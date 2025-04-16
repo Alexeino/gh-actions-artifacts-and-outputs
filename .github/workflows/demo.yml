@@ -9,8 +9,13 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm # Cache the .npm where node-modules is cached
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} # Dynamic Key, hashFiles(filename) generates hash and if file content changed hash changes as well.
       - name: Install dependencies
-        run: npm ci
+        run: npm ci # If ~/.npm exists then it will use that if don't then it will run the installation by creating a new ~/.npm folder
       - name: Lint code
         run: npm run lint
       - name: Test code
@@ -23,6 +28,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v3
+      - name: Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm # Cache the .npm where node-modules is cached
+          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }} # Dynamic Key, hashFiles(filename) generates hash and if file content changed hash changes as well.
       - name: Install dependencies
         run: npm ci
       - name: Build website

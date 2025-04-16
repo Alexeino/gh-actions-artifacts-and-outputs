@@ -18,6 +18,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{ steps.publish-filename.outputs.script-file }} # Referencing the script-file ouput from steps context
     steps:
       - name: Get code
         uses: actions/checkout@v3
@@ -25,6 +27,9 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Publish JS file name
+        id: publish-filename # Step identifier which is generating the output
+        run: find dist/assets/*.js -type f -execdir echo 'script-file={}' >> $GITHUB_OUTPUT ';' # This will write the js filename inside the file whose path is at $GITHUB_OUTPUT
       - name: Upload artifact
         uses: actions/upload-artifact@v4 # Using official action provided by Github to upload artifact
         with:
@@ -41,5 +46,7 @@ jobs:
           name: dist-files # Identifier used while uploading the artifact
       - name: Output contents
         run: ls
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}" # Using output value
       - name: Deploy
         run: echo "Deploying..."
